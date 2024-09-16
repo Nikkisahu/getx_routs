@@ -1,7 +1,6 @@
-
 import '../imports.dart';
 
-class Pages {
+abstract class Pages {
   static final List<GetPage> pages = [
     GetPage(
       name: Routes.homeScreen,

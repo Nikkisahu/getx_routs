@@ -7,7 +7,6 @@ class FirstScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    print("navigationType..$navigationType");
     return Scaffold(
       appBar: AppBar(
         title:  Text(navigationType == simpleNavigation ? simpleFirstScreen :namedFirstScreen),
