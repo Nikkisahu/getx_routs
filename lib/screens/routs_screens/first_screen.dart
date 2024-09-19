@@ -9,7 +9,9 @@ class FirstScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title:  Text(navigationType == simpleNavigation ? simpleFirstScreen :namedFirstScreen),
+        title: Text(navigationType == simpleNavigation
+            ? simpleFirstScreen
+            : namedFirstScreen),
       ),
       body: Column(
         mainAxisAlignment: MainAxisAlignment.center,

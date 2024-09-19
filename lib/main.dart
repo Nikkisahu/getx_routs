@@ -18,7 +18,8 @@ class MyApp extends StatelessWidget {
       ),
       home: const HomeScreen(),
       getPages: Pages.pages,
-      initialRoute: Routes.homeScreen,
+      initialRoute: Routes.createUserScreen,
     );
   }
 }
+

@@ -4,4 +4,6 @@ abstract class Routes {
   static const secondScreen = "/secondScreen";
   static const thirdScreen = "/thirdScreen";
   static const fourthScreen = "/fourthScreen";
+  static const createUserScreen = "/createUserScreen";
+
 }
