@@ -1,6 +1,3 @@
-import 'package:getx/modules/create_user_module/create_user_bindings.dart';
-import 'package:getx/modules/create_user_module/create_user_screen.dart';
-import 'package:getx/modules/create_user_module/view_user_screen.dart';
 
 import '../imports.dart';
 
@@ -28,7 +25,7 @@ abstract class Pages {
     ),
     GetPage(
         name: Routes.createUserScreen,
-        page: () => const CreateUserScreen(),
+        page: () =>  CreateOrEditUserScreen(userModel : Get.arguments),
         binding: CreateUserBindings()),
     GetPage(
         name: Routes.viewUserScreen,

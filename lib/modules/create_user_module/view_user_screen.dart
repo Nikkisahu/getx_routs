@@ -1,5 +1,4 @@
 import 'package:getx/helpers/imports.dart';
-import 'package:getx/infrastructure/models/user_model.dart';
 
 class ViewUserScreen extends GetView<CreateUserController> {
   const ViewUserScreen({super.key});
@@ -14,6 +13,8 @@ class ViewUserScreen extends GetView<CreateUserController> {
         },
         builder: (controller) {
           return Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Expanded(
                 child: ListView.builder(
@@ -22,19 +23,51 @@ class ViewUserScreen extends GetView<CreateUserController> {
                   itemBuilder: (context, index) {
                     UserModel userModel = controller.userList[index];
                     return Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 20),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          Text("Name :- ${userModel.name} "),
-                          SizedBox(
-                            height: 25,
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 5, vertical: 5),
+                        child: Card(
+                          child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: ListTile(
+                              title: Text("Name :- ${userModel.name}"),
+                              subtitle: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                      "Description :- ${userModel.description}"),
+                                  Text("User Id :- ${userModel.id}"),
+                                ],
+                              ),
+                              trailing: Column(
+                                mainAxisAlignment: MainAxisAlignment.end,
+                                children: [
+                                  Flexible(
+                                    child: IconButton(
+                                      icon: Icon(Icons.edit),
+                                      onPressed: () async {
+                                        await Get.toNamed(
+                                            Routes.createUserScreen,
+                                            arguments: userModel);
+                                        controller.getUser();
+                                      },
+                                    ),
+                                  ),
+                                  Flexible(
+                                    child: IconButton(
+                                      icon: const Icon(
+                                        Icons.delete,
+                                        color: Colors.red,
+                                      ),
+                                      onPressed: () {
+                                        controller.deleteUser(userModel.id!);
+                                      },
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
                           ),
-                          Text("Description :- ${userModel.description} "),
-                        ],
-                      ),
-                    );
+                        ));
                   },
                 ),
               ),
