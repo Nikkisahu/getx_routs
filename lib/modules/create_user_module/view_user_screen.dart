@@ -47,7 +47,10 @@ class ViewUserScreen extends GetView<CreateUserController> {
                                       onPressed: () async {
                                         await Get.toNamed(
                                             Routes.createUserScreen,
-                                            arguments: userModel);
+                                            arguments: {
+                                              "userModel": userModel,
+                                              "isFromEdit": true
+                                            });
                                         controller.getUser();
                                       },
                                     ),
@@ -74,7 +77,8 @@ class ViewUserScreen extends GetView<CreateUserController> {
               CommonElevatedButton(
                 buttonName: "Create User",
                 onPressed: () async {
-                  await Get.toNamed(Routes.createUserScreen);
+                  await Get.toNamed(Routes.createUserScreen,
+                      arguments: {"isFromEdit": false});
                   controller.getUser();
                 },
               )

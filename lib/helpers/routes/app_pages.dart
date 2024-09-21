@@ -1,4 +1,3 @@
-
 import '../imports.dart';
 
 abstract class Pages {
@@ -25,7 +24,7 @@ abstract class Pages {
     ),
     GetPage(
         name: Routes.createUserScreen,
-        page: () =>  CreateOrEditUserScreen(userModel : Get.arguments),
+        page: () => const CreateOrEditUserScreen(),
         binding: CreateUserBindings()),
     GetPage(
         name: Routes.viewUserScreen,

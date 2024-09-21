@@ -1,9 +1,14 @@
 import 'package:getx/helpers/imports.dart';
 
 class CreateOrEditUserScreen extends GetView<CreateUserController> {
+/*
   final UserModel? userModel;
+*/
 
-  const CreateOrEditUserScreen({super.key, this.userModel});
+  const CreateOrEditUserScreen({
+    super.key,
+    /*this.userModel*/
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -11,12 +16,16 @@ class CreateOrEditUserScreen extends GetView<CreateUserController> {
       body: GetBuilder<CreateUserController>(
         init: CreateUserController(),
         initState: (state) {
-          if (userModel != null) {
-            if (kDebugMode) {
-              print("userModel...${userModel!.name}");
-              controller.nameController.text = userModel!.name!;
-              controller.descriptionController.text = userModel!.description!;
-            }
+          if (Get.arguments["isFromEdit"] == true) {
+            // if (kDebugMode) {
+            //   print("userModel...${Get.arguments["userModel"].description}");
+            // }
+            controller.nameController.text = Get.arguments["userModel"].name!;
+            controller.descriptionController.text =
+                Get.arguments["userModel"].description!;
+          } else {
+            controller.nameController.clear();
+            controller.descriptionController.clear();
           }
         },
         builder: (controller) {
@@ -39,10 +48,11 @@ class CreateOrEditUserScreen extends GetView<CreateUserController> {
                     hintText: "Description",
                   ),
                   CommonElevatedButton(
-                    buttonName: userModel != null ? "Edit" : "Create",
+                    buttonName:
+                        Get.arguments["isFromEdit"] == true ? "Edit" : "Create",
                     onPressed: () {
-                      if (userModel != null) {
-                        controller.editUser(userModel!.id!);
+                      if (Get.arguments["isFromEdit"] == true) {
+                        controller.editUser(Get.arguments["userModel"].id!);
                       } else {
                         controller.createUser();
                       }
