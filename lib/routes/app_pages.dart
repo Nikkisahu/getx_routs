@@ -1,4 +1,4 @@
-import '../imports.dart';
+import '../helpers/imports.dart';
 
 abstract class Pages {
   static final List<GetPage> pages = [
