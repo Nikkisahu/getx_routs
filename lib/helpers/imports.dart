@@ -8,6 +8,7 @@ export 'package:getx/screens/routs_screens/fourth_screen.dart';
 export 'package:get/get_navigation/src/root/get_material_app.dart';
 export 'package:getx/screens/routs_screens/first_screen.dart';
 export 'package:getx/helpers/strings.dart';
+export 'package:getx/helpers/constants.dart';
 export 'package:getx/helpers/storage_service.dart';
 export 'package:get/get_navigation/src/routes/get_route.dart';
 export 'package:getx/routes/app_routes.dart';
