@@ -1,40 +1,46 @@
 // Importing necessary packages and files
+//https://lightslategray-bear-191841.hostingersite.com/public/api/get_profile  // post method
+//https://lightslategray-bear-191841.hostingersite.com/public/api/login  // post method
+//https://lightslategray-bear-191841.hostingersite.com/public/api/dashboard  // get method
 
+// import 'package:get/get.dart' as getx;
+import 'dart:async';
 import 'dart:developer';
 import 'dart:io';
 
-import 'package:dio/dio.dart' as Dio;
-import 'package:get/get.dart' as getx;
-import 'package:getx/helpers/imports.dart';
-import 'package:getx/utlis/app_colors.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:device_info_plus/device_info_plus.dart';
+import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
+import 'package:getx/helpers/constants.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
 // API Provider class for making API calls
 class ApiProvider {
-  late Dio.Dio dio;
+  late Dio dio;
 
   ApiProvider() {
-    dio = Dio.Dio();
+    dio = Dio();
   }
 
   Future<dynamic> postAPICall(
     String url,
     FormData? formData, {
     bool passToken = true,
-    Function(int, int)? onSendProgress,
+    // Function(int, int)? onSendProgress,
     Map<String, String>? headers,
   }) async {
-    ConnectivityResult connectivityResult =
-        (await (Connectivity().checkConnectivity())) as ConnectivityResult;
-    if (connectivityResult == ConnectivityResult.mobile ||
-        connectivityResult == ConnectivityResult.wifi) {
+    List<ConnectivityResult> connectivityResult =
+        await (Connectivity().checkConnectivity());
+    if (connectivityResult.contains(ConnectivityResult.mobile) ||
+        connectivityResult.contains(ConnectivityResult.wifi)) {
       // String? accessToken =
       //     await StorageService().readSecureData(Constants.accessToken);
       String? accessToken = Constants.accessToken;
       Map<String, String> headersData = {
         "accept": 'application/json',
       };
-
+      //
       if (headers != null) {
         headersData.addAll(headers);
       }
@@ -53,62 +59,64 @@ class ApiProvider {
       var responseJson;
       try {
         final response = await dio
-            .post(url,
-                data: formData ?? {},
-                options: Dio.Options(
-                  headers: headersData,
-                ),
-                onSendProgress: onSendProgress)
+            .post(
+              url,
+              data: formData ?? {},
+              // options: Options(
+              //   headers: headersData,
+              // ),
+              // onSendProgress: onSendProgress,
+            )
             .timeout(
               const Duration(seconds: 100),
             );
 
         print("URL ===  $url");
         print("RESPONSE CODE ===  ${response.statusCode}");
-        responseJson = await _response(response.data);
+        responseJson = await _response(response);
         // if (responseJson != null) {
         //   responseJson = decryptResponse(responseJson);
         // }
         if (kDebugMode) {
-          log("RESPONSE === $responseJson");
+          print("RESPONSE === $responseJson");
         }
       } on SocketException {
         throw FetchDataException('No Internet Connection');
       } on TimeoutException {
         throw FetchDataException(
             'Something went wrong, Please try again later');
-      } on Dio.DioException catch (e) {
+      } on DioException catch (e) {
         print(e);
         // LoadingDialog.hideLoader();
-        if (e.response != null && e.response!.statusCode == 401) {
-          await StorageService().deleteAllSecureData();
-          getx.Get.offAllNamed(Routes.SIGN_IN);
-          Utils.showAlertDialog(
-            context: navState.currentContext!,
-            title: "Authorization Error",
-            description:
-                "You are not authorized to access this application, Please login again.",
-            buttons: [
-              TextButton(
-                style: ButtonStyle(
-                  overlayColor: MaterialStateProperty.all(
-                    AppColors.primaryColor.withOpacity(.1),
-                  ),
-                ),
-                onPressed: () async {
-                  getx.Get.back();
-                },
-                child: Text(
-                  "Ok",
-                  style: TextStyle(
-                      color: AppColors.primaryColor,
-                      fontSize: getProportionalFontSize(14),
-                      fontFamily: AppFonts.w400),
-                ),
-              ),
-            ],
-          );
-        }
+        // if (e.response != null && e.response!.statusCode == 401) {
+        //   await StorageService().deleteAllSecureData();
+        //   getx.Get.offAllNamed(Routes.SIGN_IN);
+        //   Utils.showAlertDialog(
+        //     context: navState.currentContext!,
+        //     title: "Authorization Error",
+        //     description:
+        //         "You are not authorized to access this application, Please login again.",
+        //     buttons: [
+        //       TextButton(
+        //         style: ButtonStyle(
+        //           overlayColor: MaterialStateProperty.all(
+        //             AppColors.primaryColor.withOpacity(.1),
+        //           ),
+        //         ),
+        //         onPressed: () async {
+        //           getx.Get.back();
+        //         },
+        //         child: Text(
+        //           "Ok",
+        //           style: TextStyle(
+        //               color: AppColors.primaryColor,
+        //               fontSize: getProportionalFontSize(14),
+        //               fontFamily: AppFonts.w400),
+        //         ),
+        //       ),
+        //     ],
+        //   );
+        // }
       }
       return responseJson;
     } else {
@@ -158,13 +166,13 @@ class ApiProvider {
               url,
               queryParameters: queryParam,
               // data: queryParam,
-              options: Dio.Options(
+              options: Options(
                 headers: headersData,
               ),
             )
             .timeout(Duration(seconds: 100));
 
-        // responseJson = await _response(response);
+        responseJson = await _response(response);
         // if (responseJson != null) {
         //   responseJson = decryptResponse(responseJson);
         // }
@@ -177,39 +185,39 @@ class ApiProvider {
       } on TimeoutException {
         throw FetchDataException(
             'Something went wrong, Please try again later');
+      } on DioException catch (e) {
+        print(e);
+        // LoadingDialog.hideLoader();
+        // if (e.response != null && e.response!.statusCode == 401) {
+        //   await StorageService().deleteAllSecureData();
+        //   getx.Get.offAllNamed(Routes.SIGN_IN);
+        //   Utils.showAlertDialog(
+        //     context: navState.currentContext!,
+        //     title: "Authorization Error",
+        //     description:
+        //         "You are not authorized to access this application, Please login again.",
+        //     buttons: [
+        //       TextButton(
+        //         style: ButtonStyle(
+        //           overlayColor: MaterialStateProperty.all(
+        //             AppColors.primaryColor.withOpacity(.1),
+        //           ),
+        //         ),
+        //         onPressed: () async {
+        //           getx.Get.back();
+        //         },
+        //         child: Text(
+        //           "Ok",
+        //           style: TextStyle(
+        //               color: AppColors.primaryColor,
+        //               fontSize: getProportionalFontSize(14),
+        //               fontFamily: AppFonts.w400),
+        //         ),
+        //       ),
+        //     ],
+        //   );
+        // }
       }
-      // on DioException catch (e) {
-      //   LoadingDialog.hideLoader();
-      //   if (e.response != null && e.response!.statusCode == 401) {
-      //     await StorageService().deleteAllSecureData();
-      //     getx.Get.offAllNamed(Routes.SIGN_IN);
-      //     Utils.showAlertDialog(
-      //       context: navState.currentContext!,
-      //       title: "Authorization Error",
-      //       description:
-      //           "You are not authorized to access this application, Please login again.",
-      //       buttons: [
-      //         TextButton(
-      //           style: ButtonStyle(
-      //             overlayColor: MaterialStateProperty.all(
-      //               AppColors.primaryColor.withOpacity(.1),
-      //             ),
-      //           ),
-      //           onPressed: () async {
-      //             getx.Get.back();
-      //           },
-      //           child: Text(
-      //             "Ok",
-      //             style: TextStyle(
-      //                 color: AppColors.primaryColor,
-      //                 fontSize: getProportionalFontSize(14),
-      //                 fontFamily: AppFonts.regular),
-      //           ),
-      //         ),
-      //       ],
-      //     );
-      //   }
-      // }
       return responseJson;
     } else {
       // Utils.showToast('No Internet Connection');
@@ -254,7 +262,7 @@ class ApiProvider {
         final response = await dio
             .put(url,
                 data: formData ?? {},
-                options: Dio.Options(
+                options: Options(
                   headers: headersData,
                 ),
                 onSendProgress: onSendProgress)
@@ -276,39 +284,39 @@ class ApiProvider {
       } on TimeoutException {
         throw FetchDataException(
             'Something went wrong, Please try again later');
+      } on DioException catch (e) {
+        print(e);
+        // LoadingDialog.hideLoader();
+        // if (e.response != null && e.response!.statusCode == 401) {
+        //   await StorageService().deleteAllSecureData();
+        //   getx.Get.offAllNamed(Routes.SIGN_IN);
+        //   Utils.showAlertDialog(
+        //     context: navState.currentContext!,
+        //     title: "Authorization Error",
+        //     description:
+        //         "You are not authorized to access this application, Please login again.",
+        //     buttons: [
+        //       TextButton(
+        //         style: ButtonStyle(
+        //           overlayColor: MaterialStateProperty.all(
+        //             AppColors.primaryColor.withOpacity(.1),
+        //           ),
+        //         ),
+        //         onPressed: () async {
+        //           getx.Get.back();
+        //         },
+        //         child: Text(
+        //           "Ok",
+        //           style: TextStyle(
+        //               color: AppColors.primaryColor,
+        //               fontSize: getProportionalFontSize(14),
+        //               fontFamily: AppFonts.w400),
+        //         ),
+        //       ),
+        //     ],
+        //   );
+        // }
       }
-      // on DioException catch (e) {
-      //   LoadingDialog.hideLoader();
-      //   if (e.response != null && e.response!.statusCode == 401) {
-      //     await StorageService().deleteAllSecureData();
-      //     getx.Get.offAllNamed(Routes.SIGN_IN);
-      //     Utils.showAlertDialog(
-      //       context: navState.currentContext!,
-      //       title: "Authorization Error",
-      //       description:
-      //           "You are not authorized to access this application, Please login again.",
-      //       buttons: [
-      //         TextButton(
-      //           style: ButtonStyle(
-      //             overlayColor: MaterialStateProperty.all(
-      //               AppColors.primaryColor.withOpacity(.1),
-      //             ),
-      //           ),
-      //           onPressed: () async {
-      //             getx.Get.back();
-      //           },
-      //           child: Text(
-      //             "Ok",
-      //             style: TextStyle(
-      //                 color: AppColors.primaryColor,
-      //                 fontSize: getProportionalFontSize(14),
-      //                 fontFamily: AppFonts.w400),
-      //           ),
-      //         ),
-      //       ],
-      //     );
-      //   }
-      // }
       return responseJson;
     } else {
       // Utils.showToast('No Internet Connection');
@@ -322,46 +330,47 @@ class ApiProvider {
         var responseJson = response;
         return responseJson;
       case 400:
-      // LoadingDialog.hideLoader();
-      // throw BadRequestException(response.data.toString());
+        // LoadingDialog.hideLoader();
+        throw BadRequestException(response);
       case 401:
         // var responseJson = response.data;
         // LoadingDialog.hideLoader();
-        await StorageService().deleteAllSecureData();
-        getx.Get.offAllNamed(Routes.SIGN_IN);
-        Utils.showAlertDialog(
-          context: navState.currentContext!,
-          title: "Authorization Error",
-          description:
-              "You are not authorized to access this application, Please login again.",
-          buttons: [
-            TextButton(
-              style: ButtonStyle(
-                overlayColor: MaterialStateProperty.all(
-                  AppColors.primaryColor.withOpacity(.1),
-                ),
-              ),
-              onPressed: () async {
-                getx.Get.back();
-              },
-              child: Text(
-                "Ok",
-                style: TextStyle(
-                    color: AppColors.primaryColor,
-                    fontSize: getProportionalFontSize(14),
-                    fontFamily: AppFonts.w400),
-              ),
-            ),
-          ],
-        );
-        return "responseJson";
+        // await StorageService().deleteAllSecureData();
+        // getx.Get.offAllNamed(Routes.SIGN_IN);
+        // Utils.showAlertDialog(
+        //   context: navState.currentContext!,
+        //   title: "Authorization Error",
+        //   description:
+        //       "You are not authorized to access this application, Please login again.",
+        //   buttons: [
+        //     TextButton(
+        //       style: ButtonStyle(
+        //         overlayColor: MaterialStateProperty.all(
+        //           AppColors.primaryColor.withOpacity(.1),
+        //         ),
+        //       ),
+        //       onPressed: () async {
+        //         getx.Get.back();
+        //       },
+        //       child: Text(
+        //         "Ok",
+        //         style: TextStyle(
+        //             color: AppColors.primaryColor,
+        //             fontSize: getProportionalFontSize(14),
+        //             fontFamily: AppFonts.w400),
+        //       ),
+        //     ),
+        //   ],
+        // );
+        var responseJson = response;
+        return responseJson;
       case 422:
         // LoadingDialog.hideLoader();
-        // var responseJson = response.data;
-        return "responseJson";
+        var responseJson = response;
+        return responseJson;
       case 403:
-      // LoadingDialog.hideLoader();
-      // throw UnauthorisedException(response.data);
+        // LoadingDialog.hideLoader();
+        throw UnauthorisedException(response);
       case 500:
       default:
         // LoadingDialog.hideLoader();

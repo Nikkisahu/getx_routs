@@ -1,6 +1,10 @@
 import 'dart:math';
 
+import 'package:dio/dio.dart' as Dio;
 import 'package:getx/helpers/imports.dart';
+
+import '../../helpers/endpoints.dart';
+import '../../infrastructure/api_controller.dart';
 
 class CreateUserController extends GetxController {
   String? name, description;
@@ -87,5 +91,83 @@ class CreateUserController extends GetxController {
       return userData.map((e) => UserModel.fromJson(jsonDecode(e))).toList();
     }
     return [];
+  }
+
+  void loginMethod(
+      // bool? showLoader = true,
+      ) async {
+    // if (showLoader == true) {
+    //   LoadingDialog.showLoader();
+    // }
+    try {
+      Dio.FormData formData = Dio.FormData.fromMap({
+        "username": "test",
+        "password": "Test@123",
+        // "category_id": createSelectedCategory.value?.id,
+        // "subcategory_id": createSelectedSubCategory.value?.id,
+        // "brand_id": createSelectedBrand.value?.id,
+        // "sku_no": createSkuController.text,
+        // "description": convertDeltaToHTML(createProductQuillController),
+        // "description_ar": convertDeltaToHTML(createProductArabicQuillController),
+        // "price": createPriceController.text,
+        // "price_offer": createSellingPriceController.text,
+        // "percentage_discount": createDiscountController.text,
+      });
+
+      // if (createProductImageFile != null) {
+      //   formData.files.add(MapEntry('imgfile',
+      //       await Dio.MultipartFile.fromFile(createProductImageFile!.path)));
+      // }
+      // if (productVariantList.isNotEmpty) {
+      //   for (int i = 0; i < productVariantList.length; i++) {
+      //     if (productVariantList[i].isSelected == true) {
+      //       if (productVariantList[i].id != null) {
+      //         formData.fields.add(MapEntry(
+      //             'variant_ids[$i]', productVariantList[i].id!.toString()));
+      //       }
+      //     }
+      //   }
+      // }
+      Dio.Response response = await ApiProvider().postAPICall(
+        Endpoints.login,
+        formData,
+        passToken: false,
+        // onSendProgress: (count, total) {},
+      );
+      // if (showLoader == true) {
+      //   LoadingDialog.hideLoader();
+      // }
+
+      if (response.statusCode == 200) {
+        // StorageService().writeSecureData(
+        //     Constants.email, response['data']['user']['email'] ?? "");
+
+        // Get.toNamed(Routes.createUserScreen);
+        // Utils.showToast(response['message'] ?? 'Product created successfully.');
+        // Get.back();
+        // getProductList(showLoader: false);
+        // print(response['data']['user']);
+      } else {
+        print("response");
+        // Utils.showToast(response['message'] ?? 'Failed to create product.');
+      }
+      // update([createProductId]);
+    } on Dio.DioException catch (e) {
+      // if (showLoader == true) {
+      //   LoadingDialog.hideLoader();
+      // }
+      // update([createProductId]);
+
+      // Utils.showToast(e.message ?? "Something went wrong");
+      debugPrint(e.toString());
+    } catch (e) {
+      // if (showLoader == true) {
+      //   LoadingDialog.hideLoader();
+      // }
+      // update([createProductId]);
+      //
+      // Utils.showToast("Something went wrong");
+      debugPrint(e.toString());
+    }
   }
 }
